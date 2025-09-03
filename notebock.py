@@ -1,10 +1,41 @@
 #importación de libreria
 import tkinter as tk
 from tkinter import ttk, messagebox
+from datetime import datetime
 #Crear una ventana principal
 ventana_principal=tk.Tk()
 ventana_principal.title("Libro de Pacientes y Doctores")
 ventana_principal.geometry("700x700")
+
+#funcion para enmarcar fecha
+def enmascarar_fecha(texto):
+    limpio=''.join(filter(str.isdigit,texto))
+    formato_final=""
+    
+    if len(limpio)>8:
+        limpio=limpio[:8]
+    if len(limpio)>4:
+        formato_final=f"{limpio[:2]}-{limpio[2:4]}-{limpio[4:]}"
+    elif len(limpio)>2:
+        formato_final=f"{limpio[:2]}-{limpio[2:]}"
+    else:
+        formato_final=limpio
+    
+    if fechaN.get()!=formato_final:
+        fechaN.delete(0,tk.END)
+        fechaN.insert(0, formato_final)
+        
+    if len(fechaN.get())==10:
+        fecha_actual=datetime.now().date()
+        fecha_nacimiento=datetime.strptime(fechaN.get(),"%d-%m-%Y").date()
+        edad=fecha_actual.year - fecha_nacimiento.year
+        edadVar.set(edad)
+    else:
+        edadVar.set("")
+    return True
+            
+    
+
  
 #Crear contenedor Notebook(pestañas)
 pestañas=ttk.Notebook(ventana_principal)
@@ -33,7 +64,16 @@ labelEdad=tk.Label(frame_pacientes,text="Edad: ")
 labelEdad.grid(row=2,column=0,sticky="w",padx=5,pady=5)
 edadP=tk.Entry(frame_pacientes,state="readonly")
 edadP.grid(row=2,column=1,sticky="w",padx=5,pady=5)
- 
+
+edadVar=tk.StringVar()
+edadP=tk.Entry(frame_pacientes,textvariable=edadVar,state="readonly")
+edadP.grid(row=2,column=1,sticky="w",pady=5,padx=5) 
+
+validacion_fecha=ventana_principal.register(enmascarar_fecha)
+fechaN=ttk.Entry(frame_pacientes,validate="key", validatecommand=(validacion_fecha,'%P'))
+fechaN.grid(row=1, column=1, sticky="w",pady=5,padx=5)
+
+
 #Género
 labelGenero=tk.Label(frame_pacientes,text="Género: ")
 labelGenero.grid(row=3,column=0,sticky="w",padx=5,pady=5)
